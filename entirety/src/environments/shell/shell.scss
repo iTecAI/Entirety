@@ -37,6 +37,15 @@
         padding-top: 12px;
         height: calc(100vh - 60px);
         min-height: 0px;
+
+        .logo-large {
+            position: absolute;
+            top: 50%;
+            left: calc(50% + 150px);
+            opacity: 0.2;
+            transform: translate(-50%, -50%);
+            filter: blur(2px);
+        }
     }
 
     .nav {

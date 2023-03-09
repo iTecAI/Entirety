@@ -14,7 +14,7 @@ import "./shell.scss";
 import { MdCreate, MdExitToApp, MdFileOpen, MdSettings } from "react-icons/md";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
 import { useProject } from "../../util/persistence";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export function Shell() {
@@ -86,7 +86,7 @@ export function Shell() {
                 },
             })}
         >
-            <></>
+            <Outlet />
         </AppShell>
     );
 }

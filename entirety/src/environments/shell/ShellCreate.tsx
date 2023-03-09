@@ -173,7 +173,7 @@ export function ShellProjectCreate() {
                 },
             })}
         >
-            <></>
+            <img src={Logo} className="logo-large" />
         </AppShell>
     );
 }

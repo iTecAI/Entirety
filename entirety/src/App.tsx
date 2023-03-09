@@ -6,6 +6,7 @@ import { Shell } from "./environments/shell/Shell";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import * as en from "./localization/en.json";
+import { ConfigProvider } from "./util/config";
 
 i18n.use(initReactI18next) // passes i18n down to react-i18next
     .init({
@@ -43,9 +44,11 @@ function App() {
             withNormalizeCSS
             theme={{ colorScheme: "dark", fontFamily: "Roboto, sans-serif" }}
         >
-            <PersistenceProvider>
-                <Router />
-            </PersistenceProvider>
+            <ConfigProvider>
+                <PersistenceProvider>
+                    <Router />
+                </PersistenceProvider>
+            </ConfigProvider>
         </MantineProvider>
     );
 }

@@ -5,8 +5,23 @@ import { ActionIcon, Button, Group, Stack, TextInput } from "@mantine/core";
 import { MdCreate, MdFolder, MdFolderOpen } from "react-icons/md";
 import { t } from "i18next";
 import { open } from "@tauri-apps/api/dialog";
-import { exists } from "@tauri-apps/api/fs";
+import { createDir, exists, writeFile } from "@tauri-apps/api/fs";
 import { notifications } from "@mantine/notifications";
+import { join } from "@tauri-apps/api/path";
+import { VERSION } from "../../util/constants";
+
+async function buildProject(root: string, name: string) {
+    const rootPath = await join(root, name);
+    await createDir(rootPath);
+    await writeFile(
+        await join(rootPath, "project.json"),
+        JSON.stringify({
+            name,
+            lastOpened: Date.now(),
+            version: VERSION,
+        })
+    );
+}
 
 export function CreateProjectModal({
     context,
@@ -37,6 +52,7 @@ export function CreateProjectModal({
                     .then((pathExists) => {
                         if (pathExists) {
                             context.closeModal(id);
+                            buildProject(values.path, values.name);
                         } else {
                             notifications.show({
                                 title: t("dialogs.createProject.pathError"),
@@ -80,6 +96,7 @@ export function CreateProjectModal({
                                 open({
                                     directory: true,
                                     multiple: false,
+                                    recursive: true,
                                 }).then((result) => {
                                     if (result) {
                                         form.setFieldValue(

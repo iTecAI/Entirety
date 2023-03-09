@@ -8,7 +8,7 @@ export function Shell() {
             padding={"sm"}
             className="shell"
             navbar={
-                <Navbar width={{ base: 300 }} p="xs">
+                <Navbar width={{ base: 300 }} p="xs" className="nav">
                     <></>
                 </Navbar>
             }

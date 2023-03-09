@@ -1,7 +1,18 @@
-import { AppShell, Group, Header, Navbar, Title } from "@mantine/core";
+import {
+    AppShell,
+    Button,
+    Divider,
+    Group,
+    Header,
+    Navbar,
+    Space,
+    Title,
+} from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import Logo from "../../assets/logo.svg";
+import { SimpleMenu } from "../../components/SimpleMenu";
 import "./shell.scss";
+import { MdCreate, MdExitToApp, MdFileOpen, MdSettings } from "react-icons/md";
 
 export function Shell() {
     const { t } = useTranslation();
@@ -21,6 +32,32 @@ export function Shell() {
                         <Title order={2} className="app-name">
                             {t("app")}
                         </Title>
+                        <Space w="md" />
+                        <Divider orientation="vertical" />
+                        <SimpleMenu
+                            title={"shell.menus.project.title"}
+                            options={[
+                                {
+                                    text: "shell.menus.project.new",
+                                    icon: <MdCreate size={18} />,
+                                },
+                                {
+                                    text: "shell.menus.project.open",
+                                    icon: <MdFileOpen size={18} />,
+                                },
+                                "divider",
+                                "shell.menus.project.sectionManagement",
+                                {
+                                    text: "shell.menus.project.settings",
+                                    icon: <MdSettings size={18} />,
+                                },
+                                {
+                                    text: "shell.menus.project.exit",
+                                    icon: <MdExitToApp size={18} />,
+                                    color: "red",
+                                },
+                            ]}
+                        />
                     </Group>
                 </Header>
             }

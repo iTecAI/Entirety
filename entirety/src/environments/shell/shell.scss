@@ -9,6 +9,7 @@
 
     .header {
         position: relative;
+        z-index: 500;
 
         .mantine-Group-root {
             height: 100%;
@@ -24,6 +25,10 @@
                 margin-top: 4px;
             }
         }
+    }
+
+    .mantine-AppShell-body {
+        z-index: 0;
     }
 
     .mantine-AppShell-body .mantine-AppShell-main {

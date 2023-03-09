@@ -1,3 +1,15 @@
 {
-    "app": "Entirety"
+    "app": "Entirety",
+    "shell": {
+        "menus": {
+            "project": {
+                "title": "Project",
+                "new": "Create Project",
+                "open": "Open Project",
+                "sectionManagement": "Management",
+                "exit": "Exit Project",
+                "settings": "Project Settings"
+            }
+        }
+    }
 }

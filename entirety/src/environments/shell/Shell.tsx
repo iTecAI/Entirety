@@ -28,9 +28,27 @@ import {
 import { RecentProject, useConfig } from "../../util/config";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
 import { useProject } from "../../util/persistence";
+import { useEffect } from "react";
+import { exists } from "@tauri-apps/api/fs";
 
 function RecentProjectItem(props: RecentProject) {
     const [_, initialize] = useProject();
+    const [config, updateConfig] = useConfig();
+
+    useEffect(() => {
+        if (config.recentProjects) {
+            exists(props.directory).then((result) => {
+                if (!result) {
+                    updateConfig("recentProjects", [
+                        ...(config.recentProjects as RecentProject[]).filter(
+                            (v) => v.directory !== props.directory
+                        ),
+                    ]);
+                }
+            });
+        }
+    }, [props, config]);
+
     return (
         <Paper className="recent-project" shadow={"md"} p="md" withBorder>
             <MdCollectionsBookmark className="project-icon" size={20} />

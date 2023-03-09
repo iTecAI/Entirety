@@ -43,7 +43,7 @@
         .recents {
             .recent-project {
                 position: relative;
-
+                overflow: hidden;
                 padding-left: 48px;
 
                 .project-icon {
@@ -51,6 +51,18 @@
                     top: 50%;
                     left: 14px;
                     transform: translate(0, -50%);
+                }
+
+                .open-btn {
+                    position: absolute;
+                    top: 50%;
+                    right: -48px;
+                    transform: translate(0, -50%);
+                    transition: right 0.15s ease-in-out;
+                }
+
+                &:hover .open-btn {
+                    right: 16px;
                 }
 
                 &.no-recent {

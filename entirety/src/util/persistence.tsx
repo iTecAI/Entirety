@@ -133,11 +133,16 @@ export function usePersistent<T extends ProjectFile>(uuid: string): T | null {
     }
 }
 
-export function useProject(): [ProjectManifest | null, (root: string) => void] {
+export function useProject(): [
+    ProjectManifest | null,
+    (root: string) => void,
+    () => void
+] {
     const [persistence, dispatch] = useContext(PersistenceContext);
 
     return [
         persistence ? persistence.manifest : null,
         (root) => dispatch({ type: "initialize", root }),
+        () => dispatch({ type: "clear" }),
     ];
 }

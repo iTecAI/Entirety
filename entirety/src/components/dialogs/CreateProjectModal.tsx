@@ -8,8 +8,9 @@ import { open } from "@tauri-apps/api/dialog";
 import { createDir, exists, writeFile } from "@tauri-apps/api/fs";
 import { notifications } from "@mantine/notifications";
 import { join } from "@tauri-apps/api/path";
-import { VERSION } from "../../util/constants";
+import { MAX_RECENT, VERSION } from "../../util/constants";
 import { RecentProject, useConfig } from "../../util/config";
+import { useProject } from "../../util/persistence";
 
 async function buildProject(
     root: string,
@@ -39,6 +40,7 @@ export function CreateProjectModal({
 }: ContextModalProps<{ modalBody: string }>) {
     const { t } = useTranslation();
     const [config, update] = useConfig();
+    const [_, init] = useProject();
     const form = useForm({
         initialValues: {
             name: "New Project",
@@ -64,10 +66,14 @@ export function CreateProjectModal({
                             context.closeModal(id);
                             buildProject(values.path, values.name).then(
                                 (result) => {
-                                    update("recentProjects", [
-                                        ...(config.recentProjects ?? []),
-                                        result,
-                                    ]);
+                                    update(
+                                        "recentProjects",
+                                        [
+                                            result,
+                                            ...(config.recentProjects ?? []),
+                                        ].slice(0, MAX_RECENT - 1)
+                                    );
+                                    init(result.directory);
                                 }
                             );
                         } else {

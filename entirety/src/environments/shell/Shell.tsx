@@ -1,4 +1,5 @@
 import {
+    ActionIcon,
     AppShell,
     Box,
     Button,
@@ -21,24 +22,36 @@ import {
     MdCreate,
     MdExitToApp,
     MdFileOpen,
+    MdOpenInNew,
     MdSettings,
 } from "react-icons/md";
 import { RecentProject, useConfig } from "../../util/config";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
-import { useEffect } from "react";
+import { useProject } from "../../util/persistence";
 
 function RecentProjectItem(props: RecentProject) {
+    const [_, initialize] = useProject();
     return (
-        <Paper className="recent-project" shadow={"sm"} p="md" withBorder>
+        <Paper className="recent-project" shadow={"md"} p="md" withBorder>
             <MdCollectionsBookmark className="project-icon" size={20} />
             <Box className="text-container">
                 <Text className="name" fz="lg">
                     {props.name}
                 </Text>
                 <Text className="edit" fz="xs" c="dimmed">
-                    {new Date(props.lastOpened).toLocaleDateString()}
+                    {new Date(props.lastOpened).toLocaleString()}
                 </Text>
             </Box>
+            <ActionIcon
+                className="open-btn"
+                variant="light"
+                radius={"xl"}
+                size="lg"
+                color="blue"
+                onClick={() => initialize(props.directory)}
+            >
+                <MdOpenInNew size={18} />
+            </ActionIcon>
         </Paper>
     );
 }
@@ -46,54 +59,71 @@ function RecentProjectItem(props: RecentProject) {
 export function Shell() {
     const { t } = useTranslation();
     const [config] = useConfig();
+    const [manifest, _, clear] = useProject();
     return (
         <AppShell
             padding={"sm"}
             className="shell"
             navbar={
                 <Navbar width={{ base: 300 }} p="sm" className="nav">
-                    <Navbar.Section grow className="recents">
-                        <Stack spacing="sm">
-                            <Text c="dimmed">
-                                {t("shell.side.label.recent")}
-                            </Text>
-                            {config.recentProjects &&
-                            config.recentProjects.length ? (
-                                config.recentProjects.map((v, i) => (
-                                    <RecentProjectItem {...v} key={i} />
-                                ))
-                            ) : (
-                                <Paper
-                                    className="recent-project no-recent"
-                                    shadow={"sm"}
-                                    p="md"
-                                    withBorder
-                                >
-                                    {t("shell.side.noProject")}
-                                </Paper>
-                            )}
-                        </Stack>
-                    </Navbar.Section>
-                    <Space h="sm" />
-                    <Divider />
-                    <Space h="sm" />
-                    <Navbar.Section className="actions">
-                        <Stack spacing="sm">
-                            <Button
-                                leftIcon={<MdCreate size={18} />}
-                                variant="light"
-                                onClick={trigger_createProject}
-                            >
-                                {t("shell.side.actions.new")}
-                            </Button>
-                            <Button
-                                leftIcon={<MdFileOpen size={18} />}
-                                variant="light"
-                            >
-                                {t("shell.side.actions.open")}
-                            </Button>
-                        </Stack>
-                    </Navbar.Section>
+                    {manifest ? (
+                        <Navbar.Section grow className="project-content">
+                            <></>
+                        </Navbar.Section>
+                    ) : (
+                        <>
+                            <Navbar.Section grow className="recents">
+                                <Stack spacing="sm">
+                                    <Text c="dimmed">
+                                        {t("shell.side.label.recent")}
+                                    </Text>
+                                    {config.recentProjects &&
+                                    config.recentProjects.length ? (
+                                        config.recentProjects
+                                            .sort(
+                                                (a, b) =>
+                                                    b.lastOpened - a.lastOpened
+                                            )
+                                            .map((v, i) => (
+                                                <RecentProjectItem
+                                                    {...v}
+                                                    key={i}
+                                                />
+                                            ))
+                                    ) : (
+                                        <Paper
+                                            className="recent-project no-recent"
+                                            shadow={"sm"}
+                                            p="md"
+                                            withBorder
+                                        >
+                                            {t("shell.side.noProject")}
+                                        </Paper>
+                                    )}
+                                </Stack>
+                            </Navbar.Section>
+                            <Space h="sm" />
+                            <Divider />
+                            <Space h="sm" />
+                            <Navbar.Section className="actions">
+                                <Stack spacing="sm">
+                                    <Button
+                                        leftIcon={<MdCreate size={18} />}
+                                        variant="light"
+                                        onClick={trigger_createProject}
+                                    >
+                                        {t("shell.side.actions.new")}
+                                    </Button>
+                                    <Button
+                                        leftIcon={<MdFileOpen size={18} />}
+                                        variant="light"
+                                    >
+                                        {t("shell.side.actions.open")}
+                                    </Button>
+                                </Stack>
+                            </Navbar.Section>
+                        </>
+                    )}
                 </Navbar>
             }
             header={
@@ -127,6 +157,7 @@ export function Shell() {
                                     text: "shell.menus.project.exit",
                                     icon: <MdExitToApp size={18} />,
                                     color: "red",
+                                    action: clear,
                                 },
                             ]}
                         />

@@ -54,13 +54,16 @@ export function Shell() {
                     <Navbar.Section className="actions">
                         <Stack spacing="sm">
                             <Button
-                                leftIcon={<MdCreate />}
+                                leftIcon={<MdCreate size={18} />}
                                 variant="light"
                                 onClick={trigger_createProject}
                             >
                                 {t("shell.side.actions.new")}
                             </Button>
-                            <Button leftIcon={<MdFileOpen />} variant="light">
+                            <Button
+                                leftIcon={<MdFileOpen size={18} />}
+                                variant="light"
+                            >
                                 {t("shell.side.actions.open")}
                             </Button>
                         </Stack>

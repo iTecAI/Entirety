@@ -65,13 +65,13 @@ export function CreateProjectModal({
                     withAsterisk
                     label={t("dialogs.createProject.name")}
                     {...form.getInputProps("name")}
-                    icon={<MdCreate />}
+                    icon={<MdCreate size={18} />}
                 />
                 <TextInput
                     withAsterisk
                     label={t("dialogs.createProject.path")}
                     {...form.getInputProps("path")}
-                    icon={<MdFolder />}
+                    icon={<MdFolder size={18} />}
                     rightSection={
                         <ActionIcon
                             variant="light"
@@ -90,7 +90,7 @@ export function CreateProjectModal({
                                 });
                             }}
                         >
-                            <MdFolderOpen />
+                            <MdFolderOpen size={18} />
                         </ActionIcon>
                     }
                 />

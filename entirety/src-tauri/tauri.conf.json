@@ -18,9 +18,13 @@
                 "open": true
             },
             "fs": {
-                "all": true
+                "all": true,
+                "scope": ["$APPCONFIG/*", "$HOME/*", "$CONFIG/*"]
             },
             "dialog": {
+                "all": true
+            },
+            "path": {
                 "all": true
             }
         },

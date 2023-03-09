@@ -1,6 +1,11 @@
-import { BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import {
+    BaseDirectory,
+    createDir,
+    readTextFile,
+    writeTextFile,
+    exists,
+} from "@tauri-apps/api/fs";
 import { appConfigDir } from "@tauri-apps/api/path";
-import { exists } from "i18next";
 import { defaultsDeep, join } from "lodash";
 import {
     useState,
@@ -35,8 +40,12 @@ export function ConfigProvider(props: { children: ReactNode | ReactNode[] }) {
     const [config, setConfig] = useState<Partial<AppConfig>>({});
 
     async function loadConfig(): Promise<Partial<AppConfig>> {
-        const path = await join(await appConfigDir(), "entirety.conf");
-        if (!(await exists(path))) {
+        if (
+            !(await exists("entirety.conf", { dir: BaseDirectory.AppConfig }))
+        ) {
+            await createDir(await appConfigDir(), {
+                dir: BaseDirectory.Config,
+            });
             await writeTextFile(
                 "entirety.conf",
                 JSON.stringify(DefaultConfig),

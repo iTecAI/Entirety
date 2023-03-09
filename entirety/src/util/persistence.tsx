@@ -3,16 +3,10 @@ import {
     ReactNode,
     useContext,
     useEffect,
-    useReducer,
     useState,
 } from "react";
-import {
-    BaseDirectory,
-    exists,
-    readTextFile,
-    writeTextFile,
-} from "@tauri-apps/api/fs";
-import { appConfigDir, join } from "@tauri-apps/api/path";
+import { exists, readTextFile } from "@tauri-apps/api/fs";
+import { join } from "@tauri-apps/api/path";
 import { isArray } from "lodash";
 
 export type ProjectManifest = {

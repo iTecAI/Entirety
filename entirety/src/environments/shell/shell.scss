@@ -38,4 +38,20 @@
         height: calc(100vh - 60px);
         min-height: 0px;
     }
+
+    .nav {
+        .recents {
+            .recent-project {
+                position: relative;
+
+                &.no-recent {
+                    margin: auto;
+                    text-align: center;
+                    display: inline-block;
+                    width: 100%;
+                    opacity: 0.6;
+                }
+            }
+        }
+    }
 }

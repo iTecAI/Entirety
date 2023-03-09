@@ -10,6 +10,31 @@
                 "exit": "Exit Project",
                 "settings": "Project Settings"
             }
+        },
+        "side": {
+            "label": {
+                "recent": "Recent Projects"
+            },
+            "noProject": "No Recent Projects",
+            "actions": {
+                "new": "Create Project",
+                "open": "Open Project"
+            }
         }
+    },
+    "dialogs": {
+        "createProject": {
+            "title": "Create New Project",
+            "name": "Project Name",
+            "nameError": "Please input project name.",
+            "path": "Project Parent Folder",
+            "pathLengthError": "Path must be specified.",
+            "pathError": "Folder does not exist.",
+            "pathErrorDetail": "Folder {{folder}} does not exist. Are you sure you entered the path correctly?"
+        }
+    },
+    "generic": {
+        "finish": "Finish",
+        "cancel": "Cancel"
     }
 }

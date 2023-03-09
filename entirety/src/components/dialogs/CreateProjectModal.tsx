@@ -9,8 +9,12 @@ import { createDir, exists, writeFile } from "@tauri-apps/api/fs";
 import { notifications } from "@mantine/notifications";
 import { join } from "@tauri-apps/api/path";
 import { VERSION } from "../../util/constants";
+import { RecentProject, useConfig } from "../../util/config";
 
-async function buildProject(root: string, name: string) {
+async function buildProject(
+    root: string,
+    name: string
+): Promise<RecentProject> {
     const rootPath = await join(root, name);
     await createDir(rootPath);
     await writeFile(
@@ -21,6 +25,11 @@ async function buildProject(root: string, name: string) {
             version: VERSION,
         })
     );
+    return {
+        name,
+        directory: rootPath,
+        lastOpened: Date.now(),
+    };
 }
 
 export function CreateProjectModal({
@@ -29,6 +38,7 @@ export function CreateProjectModal({
     innerProps,
 }: ContextModalProps<{ modalBody: string }>) {
     const { t } = useTranslation();
+    const [config, update] = useConfig();
     const form = useForm({
         initialValues: {
             name: "New Project",
@@ -52,7 +62,14 @@ export function CreateProjectModal({
                     .then((pathExists) => {
                         if (pathExists) {
                             context.closeModal(id);
-                            buildProject(values.path, values.name);
+                            buildProject(values.path, values.name).then(
+                                (result) => {
+                                    update("recentProjects", [
+                                        ...(config.recentProjects ?? []),
+                                        result,
+                                    ]);
+                                }
+                            );
                         } else {
                             notifications.show({
                                 title: t("dialogs.createProject.pathError"),

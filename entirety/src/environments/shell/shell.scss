@@ -44,7 +44,17 @@
             .recent-project {
                 position: relative;
 
+                padding-left: 48px;
+
+                .project-icon {
+                    position: absolute;
+                    top: 50%;
+                    left: 14px;
+                    transform: translate(0, -50%);
+                }
+
                 &.no-recent {
+                    padding-left: unset;
                     margin: auto;
                     text-align: center;
                     display: inline-block;

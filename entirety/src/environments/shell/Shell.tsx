@@ -1,5 +1,6 @@
 import {
     AppShell,
+    Box,
     Button,
     Divider,
     Group,
@@ -15,13 +16,36 @@ import { useTranslation } from "react-i18next";
 import Logo from "../../assets/logo.svg";
 import { SimpleMenu } from "../../components/SimpleMenu";
 import "./shell.scss";
-import { MdCreate, MdExitToApp, MdFileOpen, MdSettings } from "react-icons/md";
-import { useConfig } from "../../util/config";
+import {
+    MdCollectionsBookmark,
+    MdCreate,
+    MdExitToApp,
+    MdFileOpen,
+    MdSettings,
+} from "react-icons/md";
+import { RecentProject, useConfig } from "../../util/config";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
+import { useEffect } from "react";
+
+function RecentProjectItem(props: RecentProject) {
+    return (
+        <Paper className="recent-project" shadow={"sm"} p="md" withBorder>
+            <MdCollectionsBookmark className="project-icon" size={20} />
+            <Box className="text-container">
+                <Text className="name" fz="lg">
+                    {props.name}
+                </Text>
+                <Text className="edit" fz="xs" c="dimmed">
+                    {new Date(props.lastOpened).toLocaleDateString()}
+                </Text>
+            </Box>
+        </Paper>
+    );
+}
 
 export function Shell() {
     const { t } = useTranslation();
-    const config = useConfig();
+    const [config] = useConfig();
     return (
         <AppShell
             padding={"sm"}
@@ -35,7 +59,9 @@ export function Shell() {
                             </Text>
                             {config.recentProjects &&
                             config.recentProjects.length ? (
-                                <></>
+                                config.recentProjects.map((v, i) => (
+                                    <RecentProjectItem {...v} key={i} />
+                                ))
                             ) : (
                                 <Paper
                                     className="recent-project no-recent"

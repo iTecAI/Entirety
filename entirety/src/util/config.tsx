@@ -6,7 +6,7 @@ import {
     exists,
 } from "@tauri-apps/api/fs";
 import { appConfigDir } from "@tauri-apps/api/path";
-import { defaultsDeep, join } from "lodash";
+import { defaultsDeep, join, set } from "lodash";
 import {
     useState,
     useEffect,
@@ -15,7 +15,7 @@ import {
     useContext,
 } from "react";
 
-type RecentProject = {
+export type RecentProject = {
     name: string;
     directory: string;
     lastOpened: number;
@@ -29,11 +29,16 @@ const DefaultConfig: AppConfig = {
     recentProjects: [],
 };
 
-const ConfigContext = createContext<Partial<AppConfig>>({});
+const ConfigContext = createContext<
+    [Partial<AppConfig>, (key: string, value: any) => void]
+>([{}, () => {}]);
 
-export function useConfig(): Partial<AppConfig> {
-    const config = useContext(ConfigContext);
-    return config;
+export function useConfig(): [
+    Partial<AppConfig>,
+    (key: string, value: any) => void
+] {
+    const [config, update] = useContext(ConfigContext);
+    return [config, update];
 }
 
 export function ConfigProvider(props: { children: ReactNode | ReactNode[] }) {
@@ -45,6 +50,7 @@ export function ConfigProvider(props: { children: ReactNode | ReactNode[] }) {
         ) {
             await createDir(await appConfigDir(), {
                 dir: BaseDirectory.Config,
+                recursive: true,
             });
             await writeTextFile(
                 "entirety.conf",
@@ -69,7 +75,18 @@ export function ConfigProvider(props: { children: ReactNode | ReactNode[] }) {
     }, []);
 
     return (
-        <ConfigContext.Provider value={config}>
+        <ConfigContext.Provider
+            value={[
+                config,
+                (key, value) => {
+                    const result = set({ ...config }, key, value);
+                    writeTextFile("entirety.conf", JSON.stringify(result), {
+                        dir: BaseDirectory.AppConfig,
+                    });
+                    setConfig(result);
+                },
+            ]}
+        >
             {props.children}
         </ConfigContext.Provider>
     );

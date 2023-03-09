@@ -2,7 +2,7 @@ import "./App.scss";
 import { MantineProvider } from "@mantine/core";
 import { PersistenceProvider } from "./util/persistence";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Shell } from "./environments/shell/Shell";
+import { ShellProjectCreate } from "./environments/shell/ShellCreate";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import * as en from "./localization/en.json";
@@ -10,6 +10,7 @@ import { ConfigProvider } from "./util/config";
 import { ModalsProvider } from "@mantine/modals";
 import { CreateProjectModal } from "./components/dialogs/CreateProjectModal";
 import { Notifications } from "@mantine/notifications";
+import { Shell } from "./environments/shell/ShellMain";
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -28,7 +29,8 @@ function Router() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route index element={<Shell />}></Route>
+                <Route index element={<ShellProjectCreate />} />
+                <Route path="/p" element={<Shell />} />
             </Routes>
         </BrowserRouter>
     );

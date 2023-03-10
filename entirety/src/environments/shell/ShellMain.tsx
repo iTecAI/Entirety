@@ -13,20 +13,16 @@ import { SimpleMenu } from "../../components/SimpleMenu";
 import "./shell.scss";
 import { MdCreate, MdExitToApp, MdFileOpen, MdSettings } from "react-icons/md";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
-import { useProject } from "../../util/persistence";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useDatabase, useTable } from "../../util/db";
+import { Manifest } from "../../util/types";
 
 export function Shell() {
     const { t } = useTranslation();
-    const [manifest, b, clear] = useProject();
+    const manifest = useTable<Manifest>("manifest");
+    const [db, init, clear] = useDatabase();
     const nav = useNavigate();
-
-    useEffect(() => {
-        if (!manifest) {
-            nav("/");
-        }
-    }, [manifest]);
 
     return (
         <AppShell
@@ -70,7 +66,10 @@ export function Shell() {
                                     text: "shell.menus.project.exit",
                                     icon: <MdExitToApp size={18} />,
                                     color: "red",
-                                    action: () => clear(),
+                                    action: () => {
+                                        clear();
+                                        nav("/");
+                                    },
                                 },
                             ]}
                         />

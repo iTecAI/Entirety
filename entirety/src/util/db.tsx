@@ -1,6 +1,6 @@
-import { exists, readDir, readTextFile, writeFile } from "@tauri-apps/api/fs";
+import { exists, readTextFile, writeFile } from "@tauri-apps/api/fs";
 import { join } from "@tauri-apps/api/path";
-import { unset } from "lodash";
+import { isEqual, unset } from "lodash";
 import {
     createContext,
     ReactNode,
@@ -9,6 +9,7 @@ import {
     useState,
 } from "react";
 import { v4 } from "uuid";
+import { sleep } from "./fn";
 
 export interface DBRecord {
     id: string;
@@ -50,6 +51,7 @@ export class DBTable<T extends DBRecord = any> {
     public insert(doc: Omit<T, "id"> | T) {
         (doc as T).id = this.uuid();
         this.records[(doc as T).id] = doc as T;
+        this.lastModification = Date.now();
     }
 
     public query(q: Query<T>): T[] {
@@ -69,17 +71,19 @@ export class DBTable<T extends DBRecord = any> {
         } else if (upsert) {
             this.insert(data);
         }
+        this.lastModification = Date.now();
     }
 
     public delete(q: Query<T>) {
         const results = this.query(q);
         results.forEach((v) => unset(this.records, v.id));
+        this.lastModification = Date.now();
     }
 }
 
 export class JSONDatabase {
     private tables: { [key: string]: DBTable };
-    constructor(private folder: string) {
+    constructor(public folder: string) {
         this.tables = {};
     }
 
@@ -90,6 +94,7 @@ export class JSONDatabase {
                     await join(this.folder, `${t.name}.db`),
                     t.serialize()
                 );
+                t.lastSave = Date.now();
             }
         }
     }
@@ -108,8 +113,8 @@ export class JSONDatabase {
 }
 
 const DBContext = createContext<
-    [JSONDatabase | null, (folder: string) => void, () => void]
->([null, () => {}, () => {}]);
+    [JSONDatabase | null, (folder: string) => JSONDatabase, () => void]
+>([null, () => null as unknown as JSONDatabase, () => {}]);
 
 export function DBProvider(props: { children: ReactNode | ReactNode[] }) {
     const [db, setDb] = useState<JSONDatabase | null>(null);
@@ -118,7 +123,11 @@ export function DBProvider(props: { children: ReactNode | ReactNode[] }) {
         <DBContext.Provider
             value={[
                 db,
-                (folder) => setDb(new JSONDatabase(folder)),
+                (folder) => {
+                    const created = new JSONDatabase(folder);
+                    setDb(created);
+                    return created;
+                },
                 () => setDb(null),
             ]}
         >
@@ -129,7 +138,7 @@ export function DBProvider(props: { children: ReactNode | ReactNode[] }) {
 
 export function useDatabase(): [
     JSONDatabase | null,
-    (folder: string) => void,
+    (folder: string) => JSONDatabase,
     () => void
 ] {
     const [db, init, clear] = useContext(DBContext);
@@ -139,17 +148,24 @@ export function useDatabase(): [
 export function useTable<T extends DBRecord>(table: string): DBTable<T> | null {
     const [db] = useDatabase();
     const [result, setResult] = useState<DBTable<T> | null>(null);
-    const tableRecords = result && result.records;
+    const [ltu, setLtu] = useState<string>("");
+
+    //useEffect(() => console.log(result), [result]);
+    useEffect(() => console.log(table, result, ltu), [table, result, ltu]);
 
     useEffect(() => {
         if (db) {
-            db.table<T>(table).then(setResult);
+            if (table !== ltu) {
+                db.table<T>(table).then((r) => {
+                    setResult(r);
+                    setLtu(table);
+                });
+            }
         } else {
             setResult(null);
+            setLtu("");
         }
     }, [table, db]);
-
-    useEffect(() => setResult(result), [tableRecords]);
     return result;
 }
 

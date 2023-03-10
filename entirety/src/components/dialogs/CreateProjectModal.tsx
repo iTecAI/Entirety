@@ -10,28 +10,9 @@ import { notifications } from "@mantine/notifications";
 import { join } from "@tauri-apps/api/path";
 import { MAX_RECENT, VERSION } from "../../util/constants";
 import { RecentProject, useConfig } from "../../util/config";
-import { useProject } from "../../util/persistence";
-
-async function buildProject(
-    root: string,
-    name: string
-): Promise<RecentProject> {
-    const rootPath = await join(root, name);
-    await createDir(rootPath);
-    await writeFile(
-        await join(rootPath, "project.json"),
-        JSON.stringify({
-            name,
-            lastOpened: Date.now(),
-            version: VERSION,
-        })
-    );
-    return {
-        name,
-        directory: rootPath,
-        lastOpened: Date.now(),
-    };
-}
+import { JSONDatabase, useDatabase } from "../../util/db";
+import { Manifest } from "../../util/types";
+import { sleep } from "../../util/fn";
 
 export function CreateProjectModal({
     context,
@@ -40,7 +21,38 @@ export function CreateProjectModal({
 }: ContextModalProps<{ modalBody: string }>) {
     const { t } = useTranslation();
     const [config, update] = useConfig();
-    const [_, init] = useProject();
+    const [db, init] = useDatabase();
+
+    async function initProject(
+        root: string,
+        name: string
+    ): Promise<RecentProject> {
+        const rootPath = await join(root, name);
+        if (!(await exists(rootPath))) {
+            await createDir(rootPath);
+        }
+        const _db = init(rootPath);
+        const table = await (_db as JSONDatabase).table<Manifest>("manifest");
+        if (!table.records.manifest) {
+            table.records.manifest = {
+                id: "manifest",
+                name: name,
+                lastOpened: Date.now(),
+                version: VERSION,
+            };
+            table.lastModification = Date.now();
+            await (_db as JSONDatabase).save();
+        }
+        console.log(table);
+        const out = {
+            name: table.records.manifest.name,
+            lastOpened: table.records.manifest.lastOpened,
+            directory: rootPath,
+        };
+        console.log(out);
+        return out;
+    }
+
     const form = useForm({
         initialValues: {
             name: "New Project",
@@ -64,7 +76,8 @@ export function CreateProjectModal({
                     .then((pathExists) => {
                         if (pathExists) {
                             context.closeModal(id);
-                            buildProject(values.path, values.name).then(
+                            console.log(values);
+                            initProject(values.path, values.name).then(
                                 (result) => {
                                     update(
                                         "recentProjects",
@@ -73,7 +86,6 @@ export function CreateProjectModal({
                                             ...(config.recentProjects ?? []),
                                         ].slice(0, MAX_RECENT - 1)
                                     );
-                                    init(result.directory);
                                 }
                             );
                         } else {

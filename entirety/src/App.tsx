@@ -1,6 +1,5 @@
 import "./App.scss";
 import { MantineProvider } from "@mantine/core";
-import { PersistenceProvider } from "./util/persistence";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ShellProjectCreate } from "./environments/shell/ShellCreate";
 import i18n from "i18next";
@@ -11,6 +10,7 @@ import { ModalsProvider } from "@mantine/modals";
 import { CreateProjectModal } from "./components/dialogs/CreateProjectModal";
 import { Notifications } from "@mantine/notifications";
 import { Shell } from "./environments/shell/ShellMain";
+import { DBProvider } from "./util/db";
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -45,14 +45,14 @@ function App() {
             theme={{ colorScheme: "dark", fontFamily: "Roboto, sans-serif" }}
         >
             <ConfigProvider>
-                <PersistenceProvider>
+                <DBProvider>
                     <Notifications />
                     <ModalsProvider
                         modals={{ createProject: CreateProjectModal }}
                     >
                         <Router />
                     </ModalsProvider>
-                </PersistenceProvider>
+                </DBProvider>
             </ConfigProvider>
         </MantineProvider>
     );

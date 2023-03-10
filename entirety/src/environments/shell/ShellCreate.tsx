@@ -27,13 +27,14 @@ import {
 } from "react-icons/md";
 import { RecentProject, useConfig } from "../../util/config";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
-import { useProject } from "../../util/persistence";
 import { useEffect } from "react";
 import { exists } from "@tauri-apps/api/fs";
 import { useNavigate } from "react-router-dom";
+import { useDatabase, useTable } from "../../util/db";
+import { Manifest } from "../../util/types";
 
 function RecentProjectItem(props: RecentProject) {
-    const [_, initialize] = useProject();
+    const [_, initialize] = useDatabase();
     const [config, updateConfig] = useConfig();
 
     useEffect(() => {
@@ -78,7 +79,7 @@ function RecentProjectItem(props: RecentProject) {
 export function ShellProjectCreate() {
     const { t } = useTranslation();
     const [config] = useConfig();
-    const [manifest] = useProject();
+    const manifest = useTable<Manifest>("manifest");
     const nav = useNavigate();
 
     useEffect(() => {

@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/Renderable",
+  "definitions": {
+    "Renderable": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/FieldTypes"
+          },
+          {
+            "$ref": "#/definitions/FormatTypes"
+          }
+        ]
+      }
+    },
+    "FieldTypes": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BasicField"
+        },
+        {
+          "$ref": "#/definitions/SelectField"
+        }
+      ]
+    },
+    "BasicField": {
+      "type": "object",
+      "properties": {
+        "supertype": {
+          "type": "string",
+          "const": "field"
+        },
+        "type": {
+          "type": "string",
+          "const": "basic"
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "supertype",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "SelectField": {
+      "type": "object",
+      "properties": {
+        "supertype": {
+          "type": "string",
+          "const": "field"
+        },
+        "type": {
+          "type": "string",
+          "const": "select"
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "options",
+        "supertype",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "FormatTypes": {
+      "$ref": "#/definitions/FormatColumns"
+    },
+    "FormatColumns": {
+      "type": "object",
+      "properties": {
+        "supertype": {
+          "type": "string",
+          "const": "format"
+        },
+        "type": {
+          "type": "string",
+          "const": "columns"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FieldTypes"
+            }
+          }
+        }
+      },
+      "required": [
+        "fields",
+        "supertype",
+        "type"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

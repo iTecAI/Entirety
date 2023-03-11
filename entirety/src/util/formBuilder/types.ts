@@ -31,3 +31,4 @@ export interface FormatColumns extends FormatBase {
 
 export type FieldTypes = BasicField | SelectField;
 export type FormatTypes = FormatColumns;
+export type Renderable = (FieldTypes | FormatTypes)[];

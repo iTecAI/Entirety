@@ -36,5 +36,11 @@
     "generic": {
         "finish": "Finish",
         "cancel": "Cancel"
+    },
+    "documents": {
+        "categories": {
+            "basic": "Basic",
+            "character": "Characters"
+        }
     }
 }

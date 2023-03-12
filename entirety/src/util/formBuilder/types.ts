@@ -25,11 +25,18 @@ export interface SelectField extends FieldBase {
     multiple?: boolean;
 }
 
+export interface RichTextField extends FieldBase {
+    type: "rich";
+    label: string;
+    icon?: string;
+    minHeight?: number;
+}
+
 export interface FormatColumns extends FormatBase {
     type: "columns";
     fields: FieldTypes[][];
 }
 
-export type FieldTypes = BasicField | SelectField;
+export type FieldTypes = BasicField | SelectField | RichTextField;
 export type FormatTypes = FormatColumns;
 export type Renderable = (FieldTypes | FormatTypes)[];

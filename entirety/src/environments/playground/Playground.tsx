@@ -8,9 +8,10 @@ export function PlaygroundPage() {
         tex1: "",
         tex2: "",
         tex3: "",
+        rich: "Weeble Wobble",
     });
 
-    useEffect(() => console.log(formData), [formData]);
+    //useEffect(() => console.log(formData), [formData]);
 
     return (
         <FormRenderer
@@ -99,6 +100,13 @@ export function PlaygroundPage() {
                             },
                         ],
                     ],
+                },
+                {
+                    supertype: "field",
+                    type: "rich",
+                    id: "rich",
+                    label: "Test",
+                    icon: "MdArticle",
                 },
             ]}
         />

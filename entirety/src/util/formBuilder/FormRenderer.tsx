@@ -1,4 +1,12 @@
-import { Group, MultiSelect, Select, Stack, TextInput } from "@mantine/core";
+import {
+    Box,
+    Group,
+    MultiSelect,
+    Select,
+    Space,
+    Stack,
+    TextInput,
+} from "@mantine/core";
 import { createContext, useContext } from "react";
 import { Icon } from "../../components/Icon";
 import {
@@ -119,13 +127,27 @@ class Formatters {
 
     private static ColumnsFormat(props: FormatColumns) {
         return (
-            <Group spacing={"xs"}>
+            <Group
+                spacing={16}
+                style={{
+                    width: "calc(100% + 16px)",
+                    alignItems: "self-start",
+                }}
+            >
                 {props.fields.map((c, i) => (
-                    <Stack spacing={"xs"} key={i}>
+                    <Box
+                        key={i}
+                        style={{
+                            width: `calc(${100 / props.fields.length}% - 16px)`,
+                        }}
+                    >
                         {c.map((f, i) => (
-                            <Fields.Field spec={f} key={i} />
+                            <span key={i}>
+                                <Fields.Field spec={f} />
+                                <Space h={8} />
+                            </span>
                         ))}
-                    </Stack>
+                    </Box>
                 ))}
             </Group>
         );
@@ -141,14 +163,16 @@ export function FormRenderer(props: {
         <FormContext.Provider
             value={[props.values, (values) => props.onChange(values)]}
         >
-            {props.form.map((v, i) => {
-                switch (v.supertype) {
-                    case "field":
-                        return <Fields.Field spec={v} key={i} />;
-                    case "format":
-                        return <Formatters.Formatter {...v} key={i} />;
-                }
-            })}
+            <Stack spacing={"sm"}>
+                {props.form.map((v, i) => {
+                    switch (v.supertype) {
+                        case "field":
+                            return <Fields.Field spec={v} key={i} />;
+                        case "format":
+                            return <Formatters.Formatter {...v} key={i} />;
+                    }
+                })}
+            </Stack>
         </FormContext.Provider>
     );
 }

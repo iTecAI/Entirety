@@ -11,7 +11,13 @@ import { useTranslation } from "react-i18next";
 import Logo from "../../assets/logo.svg";
 import { SimpleMenu } from "../../components/SimpleMenu";
 import "./shell.scss";
-import { MdCreate, MdExitToApp, MdFileOpen, MdSettings } from "react-icons/md";
+import {
+    MdCreate,
+    MdDeveloperMode,
+    MdExitToApp,
+    MdFileOpen,
+    MdSettings,
+} from "react-icons/md";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -69,6 +75,14 @@ export function Shell() {
                                     action: () => {
                                         clear();
                                         nav("/");
+                                    },
+                                },
+                                {
+                                    text: "PLAYGROUND",
+                                    icon: <MdDeveloperMode size={18} />,
+                                    color: "red",
+                                    action: () => {
+                                        nav("/p/playground");
                                     },
                                 },
                             ]}

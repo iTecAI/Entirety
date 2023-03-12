@@ -1,4 +1,4 @@
-import { Group, Select, Stack, TextInput } from "@mantine/core";
+import { Group, MultiSelect, Select, Stack, TextInput } from "@mantine/core";
 import { createContext, useContext } from "react";
 import { Icon } from "../../components/Icon";
 import {
@@ -33,14 +33,15 @@ export function useFormField<T>(id: string): {
 }
 
 class Fields {
-    private static FieldMap = {
+    public static FieldMap = {
         basic: this.BasicField,
         select: this.SelectField,
     };
 
     public static Field(props: { spec: FieldTypes }) {
         const spec = props.spec;
-        const Element = this.FieldMap[spec.type as keyof typeof this.FieldMap];
+        const Element =
+            Fields.FieldMap[spec.type as keyof typeof Fields.FieldMap];
         const { value, setValue } = useFormField<any>(spec.id);
         return <Element {...(spec as any)} value={value} onChange={setValue} />;
     }
@@ -61,34 +62,58 @@ class Fields {
     }
 
     private static SelectField(
-        props: FieldProps<SelectField, string>
+        props: FieldProps<SelectField, string | string[]>
     ): JSX.Element {
-        return (
-            <Select
-                value={props.value}
-                onChange={props.onChange}
-                icon={
-                    props.icon ? <Icon name={props.icon as any} /> : undefined
-                }
-                label={props.label}
-                placeholder={props.placeholder}
-                searchable
-                data={props.options.map((v) => {
-                    return { value: v, label: v };
-                })}
-            />
-        );
+        if (props.multiple) {
+            return (
+                <MultiSelect
+                    value={props.value as any}
+                    onChange={props.onChange}
+                    icon={
+                        props.icon ? (
+                            <Icon name={props.icon as any} />
+                        ) : undefined
+                    }
+                    label={props.label}
+                    placeholder={props.placeholder}
+                    searchable
+                    data={props.options.map((v) => {
+                        return { value: v, label: v };
+                    })}
+                />
+            );
+        } else {
+            return (
+                <Select
+                    value={props.value as string}
+                    onChange={props.onChange as any}
+                    icon={
+                        props.icon ? (
+                            <Icon name={props.icon as any} />
+                        ) : undefined
+                    }
+                    label={props.label}
+                    placeholder={props.placeholder}
+                    searchable
+                    data={props.options.map((v) => {
+                        return { value: v, label: v };
+                    })}
+                />
+            );
+        }
     }
 }
 
 class Formatters {
-    private static FormatterMap = {
+    public static FormatterMap = {
         columns: this.ColumnsFormat,
     };
 
     public static Formatter(props: FormatTypes) {
         const Element =
-            this.FormatterMap[props.type as keyof typeof this.FormatterMap];
+            Formatters.FormatterMap[
+                props.type as keyof typeof Formatters.FormatterMap
+            ];
         return <Element {...props} />;
     }
 

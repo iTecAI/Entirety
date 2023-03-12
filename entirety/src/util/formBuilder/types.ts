@@ -22,6 +22,7 @@ export interface SelectField extends FieldBase {
     icon?: string;
     placeholder?: string;
     options: string[];
+    multiple?: boolean;
 }
 
 export interface FormatColumns extends FormatBase {

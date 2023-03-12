@@ -11,6 +11,7 @@ import { CreateProjectModal } from "./components/dialogs/CreateProjectModal";
 import { Notifications } from "@mantine/notifications";
 import { Shell } from "./environments/shell/ShellMain";
 import { DBProvider } from "./util/db";
+import { PlaygroundPage } from "./environments/playground/Playground";
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -30,7 +31,9 @@ function Router() {
         <BrowserRouter>
             <Routes>
                 <Route index element={<ShellProjectCreate />} />
-                <Route path="/p" element={<Shell />} />
+                <Route path="/p" element={<Shell />}>
+                    <Route path="playground" element={<PlaygroundPage />} />
+                </Route>
             </Routes>
         </BrowserRouter>
     );

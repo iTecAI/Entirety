@@ -20,10 +20,8 @@ import "./shell.scss";
 import {
     MdCollectionsBookmark,
     MdCreate,
-    MdExitToApp,
     MdFileOpen,
     MdOpenInNew,
-    MdSettings,
 } from "react-icons/md";
 import { RecentProject, useConfig } from "../../util/config";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
@@ -32,7 +30,6 @@ import { exists } from "@tauri-apps/api/fs";
 import { useNavigate } from "react-router-dom";
 import { useDatabase, useTable } from "../../util/db";
 import { Manifest } from "../../util/types";
-import { invoke } from "@tauri-apps/api/tauri";
 import { requestScope } from "../../util/tauriInvoke";
 
 function RecentProjectItem(props: RecentProject) {

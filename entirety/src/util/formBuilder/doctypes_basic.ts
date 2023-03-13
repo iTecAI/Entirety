@@ -1,7 +1,7 @@
 import { IconMapping } from "../../components/Icon";
 import { Renderable } from "./types";
 
-export type CategoryName = "basic" | "character";
+export type CategoryName = "basic" | "character" | null;
 
 export type DocumentTypeModel = {
     name: string;
@@ -20,9 +20,25 @@ export const CoreDocuments: { [key: string]: DocumentTypeModel } = {
         renderer: [
             {
                 supertype: "field",
-                type: "basic",
+                type: "rich",
                 id: "main",
-                label: "Test Input",
+                label: "Document Content",
+                icon: "MdArticle",
+            },
+        ],
+    },
+    folder: {
+        name: "folder",
+        displayName: "Folder",
+        icon: "MdFolder",
+        category: null,
+        renderer: [
+            {
+                supertype: "field",
+                type: "rich",
+                id: "description",
+                label: "Folder Description",
+                icon: "MdArticle",
             },
         ],
     },

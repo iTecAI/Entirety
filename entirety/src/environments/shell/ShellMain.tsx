@@ -3,9 +3,14 @@ import {
     Divider,
     Group,
     Header,
+    Input,
     Navbar,
+    Paper,
     Space,
+    Stack,
+    Text,
     Title,
+    useMantineTheme,
 } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import Logo from "../../assets/logo.svg";
@@ -21,14 +26,24 @@ import {
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useDatabase, useTable } from "../../util/db";
+import {
+    useDatabase,
+    useRecord,
+    useRecordState,
+    useTable,
+} from "../../util/db";
 import { Manifest } from "../../util/types";
+import { ProjectTree } from "./ProjectTree";
 
 export function Shell() {
     const { t } = useTranslation();
-    const manifest = useTable<Manifest>("manifest");
+    const [manifest, setManifest] = useRecordState<Manifest>(
+        "manifest",
+        "manifest"
+    );
     const [db, init, clear] = useDatabase();
     const nav = useNavigate();
+    const theme = useMantineTheme();
 
     return (
         <AppShell
@@ -36,9 +51,38 @@ export function Shell() {
             className="shell"
             navbar={
                 <Navbar width={{ base: 300 }} p="sm" className="nav">
-                    <Navbar.Section grow className="project-tree">
-                        <></>
+                    <Navbar.Section className="project-info">
+                        {manifest ? (
+                            <Paper
+                                p="sm"
+                                className="info-box"
+                                shadow="md"
+                                style={{
+                                    backgroundColor: theme.colors.dark[8],
+                                }}
+                            >
+                                <Stack spacing="sm">
+                                    <Input
+                                        variant="unstyled"
+                                        className="project-name"
+                                        value={manifest.name}
+                                        onChange={(event) =>
+                                            setManifest({
+                                                ...manifest,
+                                                name: event.target.value,
+                                            })
+                                        }
+                                    />
+                                </Stack>
+                            </Paper>
+                        ) : (
+                            <></>
+                        )}
                     </Navbar.Section>
+                    <Space h="sm" />
+                    <Divider />
+                    <Space h="sm" />
+                    <ProjectTree />
                 </Navbar>
             }
             header={

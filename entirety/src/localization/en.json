@@ -41,6 +41,10 @@
         "categories": {
             "basic": "Basic",
             "character": "Characters"
+        },
+        "menu": {
+            "noDocuments": "This project has no documents.",
+            "noDocumentsCreate": "Create Document"
         }
     }
 }

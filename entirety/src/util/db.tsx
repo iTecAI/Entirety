@@ -6,6 +6,7 @@ import {
     ReactNode,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 import { v4 } from "uuid";
@@ -63,6 +64,7 @@ export class DBTable<T extends DBRecord = any> {
     }
 
     public replace(q: Query<T>, data: Omit<T, "id"> | T, upsert?: boolean) {
+        console.log(data);
         const results = this.query(q);
         if (results.length) {
             results.forEach((v) => {
@@ -172,16 +174,51 @@ export function useTable<T extends DBRecord>(table: string): DBTable<T> | null {
 export function useQuery<T extends DBRecord>(
     tableName: string,
     query: Query<T>
-): T[] | null {
+): T[] {
     const table = useTable<T>(tableName);
-    const [result, setResult] = useState<T[] | null>(
-        table ? table.query(query) : null
-    );
+    const [result, setResult] = useState<T[]>(table ? table.query(query) : []);
     const tableRecords = table && table.records;
 
     useEffect(
-        () => setResult(table ? table.query(query) : null),
+        () => setResult(table ? table.query(query) : []),
         [table, tableRecords]
     );
     return result;
+}
+
+export function useRecord<T extends DBRecord>(
+    tableName: string,
+    id: string
+): T | null {
+    const table = useTable<T>(tableName);
+    return table ? table.specific(id) : null;
+}
+
+export function useRecordState<T extends DBRecord>(
+    tableName: string,
+    id: string
+): [T | null, (value: T) => void] {
+    const table = useTable<T>(tableName);
+    const extTable = useMemo(() => (table ? table.records : {}), [table, id]);
+    const result = useMemo(() => {
+        console.log(extTable);
+        if (table) {
+            return table.specific(id);
+        } else {
+            return null;
+        }
+    }, [extTable, id]);
+    useEffect(() => console.log(table));
+
+    const db = useDatabase();
+    return [
+        result,
+        (value) => {
+            if (table) {
+                console.log(value);
+                table.replace((r) => r.id === id, value, true);
+                db[0] && db[0].save();
+            }
+        },
+    ];
 }

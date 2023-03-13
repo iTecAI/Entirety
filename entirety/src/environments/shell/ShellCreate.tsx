@@ -27,15 +27,27 @@ import {
 } from "react-icons/md";
 import { RecentProject, useConfig } from "../../util/config";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { exists } from "@tauri-apps/api/fs";
 import { useNavigate } from "react-router-dom";
 import { useDatabase, useTable } from "../../util/db";
 import { Manifest } from "../../util/types";
+import { invoke } from "@tauri-apps/api/tauri";
+import { requestScope } from "../../util/tauriInvoke";
 
 function RecentProjectItem(props: RecentProject) {
     const [_, initialize] = useDatabase();
     const [config, updateConfig] = useConfig();
+
+    useMemo(() => {
+        requestScope(props.directory).then(
+            (v) =>
+                v ||
+                console.log(
+                    `Failed to request scope access to ${props.directory}`
+                )
+        );
+    }, []);
 
     useEffect(() => {
         if (config.recentProjects) {

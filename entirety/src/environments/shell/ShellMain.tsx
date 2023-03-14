@@ -19,6 +19,7 @@ import "./shell.scss";
 import {
     MdCreate,
     MdDeveloperMode,
+    MdEdit,
     MdExitToApp,
     MdFileOpen,
     MdSave,
@@ -26,7 +27,6 @@ import {
 } from "react-icons/md";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Manifest } from "../../util/types";
 import { ProjectTree } from "./ProjectTree";
 import { usePersistence, useProject } from "../../util/PersistentDb";
 
@@ -58,6 +58,7 @@ export function Shell() {
                                         variant="unstyled"
                                         className="project-name"
                                         value={manifest.name}
+                                        icon={<MdEdit />}
                                         onChange={(event) =>
                                             setManifest({
                                                 ...manifest,

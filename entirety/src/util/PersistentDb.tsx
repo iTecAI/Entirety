@@ -34,7 +34,7 @@ export type Project = {
 };
 
 export type Document = {
-    id: number;
+    id?: number;
     name: string;
     icon?: string;
     tags: string[];
@@ -74,9 +74,13 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
             await readTextFile(await join(folder, "project.json"))
         );
         const importBlobs: Blob[] = [];
-        for (const f of (await readDir(folder)).filter((v) =>
-            v.path.endsWith(".db")
-        )) {
+        for (const f of (await readDir(folder))
+            .filter((v) => v.path.endsWith(".db"))
+            .sort(
+                (a, b) =>
+                    Number((a.name as string).split("_")[1].split(".")[0]) -
+                    Number((b.name as string).split("_")[1].split(".")[0])
+            )) {
             importBlobs.push(
                 new Blob([
                     await readBinaryFile(await join(folder, f.name ?? "")),

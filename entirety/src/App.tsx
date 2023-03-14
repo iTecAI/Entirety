@@ -10,8 +10,8 @@ import { ModalsProvider } from "@mantine/modals";
 import { CreateProjectModal } from "./components/dialogs/CreateProjectModal";
 import { Notifications } from "@mantine/notifications";
 import { Shell } from "./environments/shell/ShellMain";
-import { DBProvider } from "./util/db";
 import { PlaygroundPage } from "./environments/playground/Playground";
+import { PDBProvider } from "./util/PersistentDb";
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -48,14 +48,14 @@ function App() {
             theme={{ colorScheme: "dark", fontFamily: "Roboto, sans-serif" }}
         >
             <ConfigProvider>
-                <DBProvider>
+                <PDBProvider>
                     <Notifications />
                     <ModalsProvider
                         modals={{ createProject: CreateProjectModal }}
                     >
                         <Router />
                     </ModalsProvider>
-                </DBProvider>
+                </PDBProvider>
             </ConfigProvider>
         </MantineProvider>
     );

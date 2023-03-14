@@ -21,27 +21,19 @@ import {
     MdDeveloperMode,
     MdExitToApp,
     MdFileOpen,
+    MdSave,
     MdSettings,
 } from "react-icons/md";
 import { trigger_createProject } from "../../components/dialogs/CreateProjectModal";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import {
-    useDatabase,
-    useRecord,
-    useRecordState,
-    useTable,
-} from "../../util/db";
 import { Manifest } from "../../util/types";
 import { ProjectTree } from "./ProjectTree";
+import { usePersistence, useProject } from "../../util/PersistentDb";
 
 export function Shell() {
     const { t } = useTranslation();
-    const [manifest, setManifest] = useRecordState<Manifest>(
-        "manifest",
-        "manifest"
-    );
-    const [db, init, clear] = useDatabase();
+    const [manifest, setManifest] = useProject();
+    const { clear, save } = usePersistence();
     const nav = useNavigate();
     const theme = useMantineTheme();
 
@@ -111,6 +103,11 @@ export function Shell() {
                                 {
                                     text: "shell.menus.project.settings",
                                     icon: <MdSettings size={18} />,
+                                },
+                                {
+                                    text: "shell.menus.project.save",
+                                    icon: <MdSave size={18} />,
+                                    action: () => save(),
                                 },
                                 {
                                     text: "shell.menus.project.exit",

@@ -8,7 +8,8 @@
                 "open": "Open Project",
                 "sectionManagement": "Management",
                 "exit": "Exit Project",
-                "settings": "Project Settings"
+                "settings": "Project Settings",
+                "save": "Save Project"
             }
         },
         "side": {

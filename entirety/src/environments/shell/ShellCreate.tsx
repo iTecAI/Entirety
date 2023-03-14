@@ -28,12 +28,12 @@ import { trigger_createProject } from "../../components/dialogs/CreateProjectMod
 import { useEffect, useMemo } from "react";
 import { exists } from "@tauri-apps/api/fs";
 import { useNavigate } from "react-router-dom";
-import { useDatabase, useTable } from "../../util/db";
-import { Manifest } from "../../util/types";
+
 import { requestScope } from "../../util/tauriInvoke";
+import { usePersistence, useProject } from "../../util/PersistentDb";
 
 function RecentProjectItem(props: RecentProject) {
-    const [_, initialize] = useDatabase();
+    const { load } = usePersistence();
     const [config, updateConfig] = useConfig();
 
     useMemo(() => {
@@ -77,7 +77,7 @@ function RecentProjectItem(props: RecentProject) {
                 radius={"xl"}
                 size="lg"
                 color="blue"
-                onClick={() => initialize(props.directory)}
+                onClick={() => load(props.directory, props.name)}
             >
                 <MdOpenInNew size={18} />
             </ActionIcon>
@@ -88,14 +88,14 @@ function RecentProjectItem(props: RecentProject) {
 export function ShellProjectCreate() {
     const { t } = useTranslation();
     const [config] = useConfig();
-    const manifest = useTable<Manifest>("manifest");
+    const [project] = useProject();
     const nav = useNavigate();
 
     useEffect(() => {
-        if (manifest) {
+        if (project) {
             nav("/p");
         }
-    }, [manifest]);
+    }, [project]);
     return (
         <AppShell
             padding={"sm"}

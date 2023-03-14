@@ -1,14 +1,12 @@
 import { Button, Navbar, Paper, Stack, Text } from "@mantine/core";
 import { useTranslation } from "react-i18next";
-import { useQuery, useRecord } from "../../util/db";
-import { Document, Manifest } from "../../util/types";
+import { useProject, useQuery } from "../../util/PersistentDb";
 import "./tree.scss";
 
 export function ProjectTree() {
-    const manifest: Manifest | null = useRecord("manifest", "manifest");
-    const rootDocuments: Document[] = useQuery<Document>(
-        "documents",
-        (record) => record.parent === null
+    const [manifest, setManifest] = useProject();
+    const rootDocuments: Document[] = useQuery<Document>("documents", (table) =>
+        table.where("parent").equals("").toArray()
     );
     const { t } = useTranslation();
 

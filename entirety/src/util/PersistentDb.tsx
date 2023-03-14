@@ -23,13 +23,14 @@ import { MAX_CHUNK_SIZE, VERSION } from "./constants";
 import { requestScope } from "./tauriInvoke";
 
 const TABLES = {
-    documents: "++id, name, tags",
+    documents: "++id, name, tags, parent",
 };
 const APPDB = "com.entirety.db";
 
 export type Project = {
     name: string;
     version: string;
+    lastUpdate: number;
 };
 
 export type Document = {
@@ -37,6 +38,7 @@ export type Document = {
     name: string;
     icon?: string;
     tags: string[];
+    parent: string; // "" if root
     model: string;
     data: { [key: string]: any };
 };
@@ -55,7 +57,7 @@ export type PersistentDb = {
     folder: string | null;
     project: Project | null;
     setProject: (p: Project) => void;
-    setFolder: (f: string | null) => Promise<void>;
+    setFolder: (f: string | null) => Promise<Project | null>;
     save: () => Promise<void>;
 };
 
@@ -66,7 +68,7 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
     const [folder, setFolder] = useState<string | null>(null);
     const [project, setProject] = useState<Project | null>(null);
 
-    async function setupProject(folder: string) {
+    async function setupProject(folder: string): Promise<Project> {
         await requestScope(folder);
         const p: Project = JSON.parse(
             await readTextFile(await join(folder, "project.json"))
@@ -86,6 +88,7 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
             await importInto(db, new Blob(importBlobs));
         }
         setProject(p);
+        return p;
     }
 
     return (
@@ -98,9 +101,10 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
                 setFolder: async function (f) {
                     setFolder(f);
                     if (f) {
-                        await setupProject(f);
+                        return await setupProject(f);
                     } else {
                         setProject(null);
+                        return null;
                     }
                 },
                 save: async function () {
@@ -133,7 +137,7 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
 
 type PersistentHook = {
     db: TypedDexie;
-    load: (folder: string, name: string) => Promise<void>;
+    load: (folder: string, name: string) => Promise<Project>;
     save: () => Promise<void>;
     clear: () => Promise<void>;
 };
@@ -147,10 +151,14 @@ export function usePersistence(): PersistentHook {
                 await createDir(path);
                 await writeTextFile(
                     await join(path, "project.json"),
-                    JSON.stringify({ name, version: VERSION })
+                    JSON.stringify({
+                        name,
+                        version: VERSION,
+                        lastUpdate: Date.now(),
+                    })
                 );
             }
-            await context.setFolder(path);
+            return (await context.setFolder(path)) as Project;
         },
         save: context.save,
         clear: async function () {

@@ -10,9 +10,8 @@ import { notifications } from "@mantine/notifications";
 import { join } from "@tauri-apps/api/path";
 import { MAX_RECENT, VERSION } from "../../util/constants";
 import { RecentProject, useConfig } from "../../util/config";
-import { JSONDatabase, useDatabase } from "../../util/db";
-import { Manifest } from "../../util/types";
 import { sleep } from "../../util/fn";
+import { usePersistence } from "../../util/PersistentDb";
 
 export function CreateProjectModal({
     context,
@@ -21,37 +20,7 @@ export function CreateProjectModal({
 }: ContextModalProps<{ modalBody: string }>) {
     const { t } = useTranslation();
     const [config, update] = useConfig();
-    const [db, init] = useDatabase();
-
-    async function initProject(
-        root: string,
-        name: string
-    ): Promise<RecentProject> {
-        const rootPath = await join(root, name);
-        if (!(await exists(rootPath))) {
-            await createDir(rootPath);
-        }
-        const _db = init(rootPath);
-        const table = await (_db as JSONDatabase).table<Manifest>("manifest");
-        if (!table.records.manifest) {
-            table.records.manifest = {
-                id: "manifest",
-                name: name,
-                lastOpened: Date.now(),
-                version: VERSION,
-            };
-            table.lastModification = Date.now();
-            await (_db as JSONDatabase).save();
-        }
-        console.log(table);
-        const out = {
-            name: table.records.manifest.name,
-            lastOpened: table.records.manifest.lastOpened,
-            directory: rootPath,
-        };
-        console.log(out);
-        return out;
-    }
+    const { db, load, save } = usePersistence();
 
     const form = useForm({
         initialValues: {
@@ -77,17 +46,19 @@ export function CreateProjectModal({
                         if (pathExists) {
                             context.closeModal(id);
                             console.log(values);
-                            initProject(values.path, values.name).then(
-                                (result) => {
-                                    update(
-                                        "recentProjects",
-                                        [
-                                            result,
-                                            ...(config.recentProjects ?? []),
-                                        ].slice(0, MAX_RECENT - 1)
-                                    );
-                                }
-                            );
+                            load(values.path, values.name).then((result) => {
+                                update(
+                                    "recentProjects",
+                                    [
+                                        {
+                                            directory: values.path,
+                                            name: result.name,
+                                            lastOpened: result.lastUpdate,
+                                        } as RecentProject,
+                                        ...(config.recentProjects ?? []),
+                                    ].slice(0, MAX_RECENT - 1)
+                                );
+                            });
                         } else {
                             notifications.show({
                                 title: t("dialogs.createProject.pathError"),

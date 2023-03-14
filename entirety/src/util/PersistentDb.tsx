@@ -127,6 +127,11 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
                             break;
                         }
                     }
+
+                    await writeTextFile(
+                        await join(folder, "project.json"),
+                        JSON.stringify(project)
+                    );
                 },
             }}
         >

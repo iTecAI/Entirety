@@ -38,7 +38,7 @@ export type Document = {
     name: string;
     icon?: string;
     tags: string[];
-    parent: string; // "" if root
+    parent: number; // -1 if root
     model: string;
     data: { [key: string]: any };
 };
@@ -195,7 +195,7 @@ export function useTable<T>(table: keyof typeof TABLES): Table<T> {
     return db[table] as Table<T>;
 }
 
-export function useDocument(id: string): Document | null {
+export function useDocument(id: number): Document | null {
     const result = useQuery<Document>("documents", (t) =>
         t.where("id").equals(id).toArray()
     );

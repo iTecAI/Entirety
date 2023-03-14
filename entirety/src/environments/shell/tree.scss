@@ -4,3 +4,30 @@
         text-align: center;
     }
 }
+
+.document-list {
+    .document-item {
+        position: relative;
+        transition: background-color 0.1s;
+        &:hover {
+            background-color: #00000030;
+        }
+
+        svg {
+            transform: translate(0, -1px);
+        }
+
+        .mantine-Text-root {
+            user-select: none;
+            pointer-events: none;
+        }
+
+        cursor: pointer;
+
+        .action {
+            position: absolute;
+            top: 11px;
+            right: 8px;
+        }
+    }
+}

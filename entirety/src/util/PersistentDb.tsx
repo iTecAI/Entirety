@@ -95,6 +95,13 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
         return p;
     }
 
+    useMemo(() => {
+        if (localStorage.getItem("current")) {
+            setFolder(localStorage.getItem("current"));
+            setupProject(localStorage.getItem("current") as string);
+        }
+    }, []);
+
     return (
         <PDBContext.Provider
             value={{
@@ -105,9 +112,11 @@ export function PDBProvider(props: { children: ReactNode | ReactNode[] }) {
                 setFolder: async function (f) {
                     setFolder(f);
                     if (f) {
+                        window.localStorage.setItem("current", f);
                         return await setupProject(f);
                     } else {
                         setProject(null);
+                        localStorage.removeItem("current");
                         return null;
                     }
                 },

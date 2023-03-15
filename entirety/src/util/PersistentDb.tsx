@@ -186,7 +186,8 @@ export function useQuery<T>(
     query: (table: Table<T>) => Promise<T[]>
 ): T[] {
     const { db } = useContext(PDBContext);
-    const result = useLiveQuery(() => query(db[table] as any));
+    const _q = useMemo(() => () => query(db[table] as any), [query]);
+    const result = useLiveQuery(_q);
     return result ?? [];
 }
 
@@ -195,10 +196,21 @@ export function useTable<T>(table: keyof typeof TABLES): Table<T> {
     return db[table] as Table<T>;
 }
 
-export function useDocument(id: number): Document | null {
-    const result = useQuery<Document>("documents", (t) =>
-        t.where("id").equals(id).toArray()
+export function useDocument(
+    id: number
+): [Document | null, (document: Document) => void] {
+    const query = useMemo(
+        () => (t: Table<Document>) => t.where("id").equals(id).toArray(),
+        [id]
     );
+    const result = useQuery<Document>("documents", query);
+    const finalResult = useMemo(() => result[0] ?? null, [result]);
+    const table = useTable<Document>("documents");
 
-    return result[0] ?? null;
+    return [
+        finalResult,
+        (document) => {
+            table.put(document, document.id);
+        },
+    ];
 }

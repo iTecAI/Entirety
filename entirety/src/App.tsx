@@ -12,6 +12,7 @@ import { Notifications } from "@mantine/notifications";
 import { Shell } from "./environments/shell/ShellMain";
 import { PlaygroundPage } from "./environments/playground/Playground";
 import { PDBProvider } from "./util/PersistentDb";
+import { DocumentEditor } from "./environments/document_editor/Editor";
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -32,7 +33,7 @@ function Router() {
             <Routes>
                 <Route index element={<ShellProjectCreate />} />
                 <Route path="/p" element={<Shell />}>
-                    <Route path="playground" element={<PlaygroundPage />} />
+                    <Route path="doc/:id" element={<DocumentEditor />} />
                 </Route>
             </Routes>
         </BrowserRouter>

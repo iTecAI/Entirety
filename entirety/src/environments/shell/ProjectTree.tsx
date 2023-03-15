@@ -15,6 +15,7 @@ import {
 import { ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdAdd, MdExpandLess, MdExpandMore } from "react-icons/md";
+import { useNavigate, useParams } from "react-router-dom";
 import { Icon } from "../../components/Icon";
 import {
     CoreDocuments,
@@ -96,60 +97,69 @@ function ProjectCreationMenu(props: { target: ReactNode; parent: number }) {
 }
 
 function ProjectDocument(props: { id: number }) {
-    const doc = useDocument(props.id);
+    const [doc] = useDocument(props.id);
     const { t } = useTranslation();
     const children = useQuery<Document>("documents", (table) =>
         table.where("parent").equals(props.id).toArray()
     );
     const [expanded, setExpanded] = useState<boolean>(false);
+    const nav = useNavigate();
+    const { id } = useParams();
+
     return (
         doc && (
             <Box>
-                <Paper p="sm" className="document-item">
+                <Paper
+                    p="sm"
+                    className="document-item"
+                    onClick={() => nav(`/p/doc/${props.id}`)}
+                    style={
+                        id && Number(id) === props.id
+                            ? { backgroundColor: "#00000030" }
+                            : undefined
+                    }
+                >
                     <Group spacing="sm">
                         {doc.icon && <Icon name={doc.icon as any} size={20} />}
                         <Text size="md">{doc.name}</Text>
                     </Group>
-                    {children.length === 0 ? (
+                    <Group className="action" spacing={2}>
                         <ProjectCreationMenu
                             target={
                                 <ActionIcon
                                     radius="xl"
-                                    className="action create-child"
+                                    className="create-child"
+                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     <MdAdd />
                                 </ActionIcon>
                             }
                             parent={props.id}
                         />
-                    ) : (
-                        <ActionIcon
-                            radius="xl"
-                            className="action create-child"
-                            onClick={() => setExpanded(!expanded)}
-                        >
-                            {expanded ? <MdExpandLess /> : <MdExpandMore />}
-                        </ActionIcon>
-                    )}
+                        {children.length > 0 && (
+                            <ActionIcon
+                                radius="xl"
+                                className="create-child"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpanded(!expanded);
+                                }}
+                            >
+                                {expanded ? <MdExpandLess /> : <MdExpandMore />}
+                            </ActionIcon>
+                        )}
+                    </Group>
                 </Paper>
                 {expanded && <Space h={4} />}
-                <Box style={{ marginLeft: "8px" }}>
+                <Box
+                    style={{ marginLeft: "8px" }}
+                    onClick={(e) => e.stopPropagation()}
+                >
                     {expanded && (
                         <Stack spacing={4} className="child-box">
                             {children.map((v, i) => (
                                 <ProjectDocument id={v.id as number} key={i} />
                             ))}
-                            <ProjectCreationMenu
-                                target={
-                                    <Button
-                                        variant="subtle"
-                                        style={{ width: "100%" }}
-                                    >
-                                        {t("documents.menu.documentCreate")}
-                                    </Button>
-                                }
-                                parent={-1}
-                            />
                         </Stack>
                     )}
                 </Box>

@@ -46,6 +46,10 @@
         "menu": {
             "noDocuments": "This project has no documents.",
             "documentCreate": "Create Document"
+        },
+        "editor": {
+            "name": "Document Name",
+            "tags": "Document Tags"
         }
     }
 }

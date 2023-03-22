@@ -69,8 +69,8 @@ function ProjectCreationMenu(props: { target: ReactNode; parent: number }) {
                     ))}
                 {Object.keys(categories)
                     .filter((v) => v !== "null")
-                    .map((c) => (
-                        <>
+                    .map((c, i) => (
+                        <span key={i}>
                             <Menu.Label>
                                 {t(`documents.categories.${c}`)}
                             </Menu.Label>
@@ -83,7 +83,7 @@ function ProjectCreationMenu(props: { target: ReactNode; parent: number }) {
                                     {v.displayName}
                                 </Menu.Item>
                             ))}
-                        </>
+                        </span>
                     ))}
             </Menu.Dropdown>
         );

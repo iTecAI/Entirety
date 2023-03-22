@@ -31,6 +31,7 @@ import { useNavigate } from "react-router-dom";
 
 import { requestScope } from "../../util/tauriInvoke";
 import { usePersistence, useProject } from "../../util/PersistentDb";
+import { TitleMenu, useMenu } from "../../util/titlemenu";
 
 function RecentProjectItem(props: RecentProject) {
     const { load } = usePersistence();
@@ -90,6 +91,25 @@ export function ShellProjectCreate() {
     const [config] = useConfig();
     const [project] = useProject();
     const nav = useNavigate();
+    useMenu(
+        [
+            {
+                title: "shell.menus.project.title",
+                options: [
+                    {
+                        text: "shell.menus.project.new",
+                        icon: <MdCreate size={18} />,
+                        action: trigger_createProject,
+                    },
+                    {
+                        text: "shell.menus.project.open",
+                        icon: <MdFileOpen size={18} />,
+                    },
+                ],
+            },
+        ],
+        "/"
+    );
 
     useEffect(() => {
         if (project) {
@@ -157,20 +177,7 @@ export function ShellProjectCreate() {
                         </Title>
                         <Space w="md" />
                         <Divider orientation="vertical" />
-                        <SimpleMenu
-                            title={"shell.menus.project.title"}
-                            options={[
-                                {
-                                    text: "shell.menus.project.new",
-                                    icon: <MdCreate size={18} />,
-                                    action: trigger_createProject,
-                                },
-                                {
-                                    text: "shell.menus.project.open",
-                                    icon: <MdFileOpen size={18} />,
-                                },
-                            ]}
-                        />
+                        <TitleMenu />
                     </Group>
                 </Header>
             }
@@ -187,3 +194,20 @@ export function ShellProjectCreate() {
         </AppShell>
     );
 }
+
+/*
+<SimpleMenu
+    title={"shell.menus.project.title"}
+    options={[
+        {
+            text: "shell.menus.project.new",
+            icon: <MdCreate size={18} />,
+            action: trigger_createProject,
+        },
+        {
+            text: "shell.menus.project.open",
+            icon: <MdFileOpen size={18} />,
+        },
+    ]}
+/>
+*/

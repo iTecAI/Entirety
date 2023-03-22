@@ -13,6 +13,7 @@ import { Shell } from "./environments/shell/ShellMain";
 import { PlaygroundPage } from "./environments/playground/Playground";
 import { PDBProvider } from "./util/PersistentDb";
 import { DocumentEditor } from "./environments/document_editor/Editor";
+import { MenuProvider } from "./util/titlemenu";
 
 i18n.use(initReactI18next).init({
     resources: {
@@ -54,7 +55,9 @@ function App() {
                     <ModalsProvider
                         modals={{ createProject: CreateProjectModal }}
                     >
-                        <Router />
+                        <MenuProvider>
+                            <Router />
+                        </MenuProvider>
                     </ModalsProvider>
                 </PDBProvider>
             </ConfigProvider>

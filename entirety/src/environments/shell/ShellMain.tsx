@@ -29,6 +29,7 @@ import { trigger_createProject } from "../../components/dialogs/CreateProjectMod
 import { Outlet, useNavigate } from "react-router-dom";
 import { ProjectTree } from "./ProjectTree";
 import { usePersistence, useProject } from "../../util/PersistentDb";
+import { TitleMenu, useMenu } from "../../util/titlemenu";
 
 export function Shell() {
     const { t } = useTranslation();
@@ -36,6 +37,53 @@ export function Shell() {
     const { clear, save } = usePersistence();
     const nav = useNavigate();
     const theme = useMantineTheme();
+    useMenu(
+        [
+            {
+                title: "shell.menus.project.title",
+                options: [
+                    {
+                        text: "shell.menus.project.new",
+                        icon: <MdCreate size={18} />,
+                        action: trigger_createProject,
+                    },
+                    {
+                        text: "shell.menus.project.open",
+                        icon: <MdFileOpen size={18} />,
+                    },
+                    "divider",
+                    "shell.menus.project.sectionManagement",
+                    {
+                        text: "shell.menus.project.settings",
+                        icon: <MdSettings size={18} />,
+                    },
+                    {
+                        text: "shell.menus.project.save",
+                        icon: <MdSave size={18} />,
+                        action: () => save(),
+                    },
+                    {
+                        text: "shell.menus.project.exit",
+                        icon: <MdExitToApp size={18} />,
+                        color: "red",
+                        action: () => {
+                            clear();
+                            nav("/");
+                        },
+                    },
+                    {
+                        text: "PLAYGROUND",
+                        icon: <MdDeveloperMode size={18} />,
+                        color: "red",
+                        action: () => {
+                            nav("/p/playground");
+                        },
+                    },
+                ],
+            },
+        ],
+        "/p"
+    );
 
     return (
         <AppShell
@@ -87,48 +135,7 @@ export function Shell() {
                         </Title>
                         <Space w="md" />
                         <Divider orientation="vertical" />
-                        <SimpleMenu
-                            title={"shell.menus.project.title"}
-                            options={[
-                                {
-                                    text: "shell.menus.project.new",
-                                    icon: <MdCreate size={18} />,
-                                    action: trigger_createProject,
-                                },
-                                {
-                                    text: "shell.menus.project.open",
-                                    icon: <MdFileOpen size={18} />,
-                                },
-                                "divider",
-                                "shell.menus.project.sectionManagement",
-                                {
-                                    text: "shell.menus.project.settings",
-                                    icon: <MdSettings size={18} />,
-                                },
-                                {
-                                    text: "shell.menus.project.save",
-                                    icon: <MdSave size={18} />,
-                                    action: () => save(),
-                                },
-                                {
-                                    text: "shell.menus.project.exit",
-                                    icon: <MdExitToApp size={18} />,
-                                    color: "red",
-                                    action: () => {
-                                        clear();
-                                        nav("/");
-                                    },
-                                },
-                                {
-                                    text: "PLAYGROUND",
-                                    icon: <MdDeveloperMode size={18} />,
-                                    color: "red",
-                                    action: () => {
-                                        nav("/p/playground");
-                                    },
-                                },
-                            ]}
-                        />
+                        <TitleMenu />
                     </Group>
                 </Header>
             }
